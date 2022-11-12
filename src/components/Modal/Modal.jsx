@@ -2,20 +2,11 @@ import * as SC from './Modal.styled';
 import { createPortal } from 'react-dom';
 
 import PropTypes from 'prop-types';
-import { useEffect, useCallback } from 'react';
+import { useEffect } from 'react';
 
 const modalRoot = document.querySelector('#modal-root');
 
 export const Modal = ({ src, alt, onClick }) => {
-  const handleKeyDown = useCallback(
-    e => {
-      if (e.code === 'Escape') {
-        onClick();
-      }
-    },
-    [onClick]
-  );
-
   const handleBackdropClick = e => {
     if (e.currentTarget === e.target) {
       onClick();
@@ -23,14 +14,18 @@ export const Modal = ({ src, alt, onClick }) => {
   };
 
   useEffect(() => {
-    window.addEventListener('keydown', handleKeyDown);
-  }, [handleKeyDown]);
+    const handleKeyDown = e => {
+      if (e.code === 'Escape') {
+        onClick();
+      }
+    };
 
-  useEffect(() => {
+    window.addEventListener('keydown', handleKeyDown);
+
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [handleKeyDown]);
+  }, [onClick]);
 
   return createPortal(
     <SC.Overlay onClick={handleBackdropClick}>
